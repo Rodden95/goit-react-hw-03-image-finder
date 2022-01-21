@@ -5,8 +5,7 @@ import ImageGalleryItem from '../ImageGalleryItem'
 import Loader from "react-loader-spinner";
 import Button from '../Button';
 import Modal from '../Modal';
-import Services from "./services";
-
+import Init from "../../services";
 
 export default class ImageGallery extends Component {
   
@@ -22,11 +21,12 @@ export default class ImageGallery extends Component {
   componentDidUpdate(prevProps, prevState) {
     const nextName = this.props.name;
     const { page,id } = this.state;
-    const services = new Services(page, nextName, id);
+    // const services = new Services(page, nextName, id);
+    const services = Init(page, nextName, id);
+
     if (prevProps.name !== nextName) {
       this.setState({ loader: true })
-      services.fetch().then(res =>
-        res.json())
+      services.fetch()
       .then(({ hits }) =>
         this.setState({ pictures: hits }))
       .finally(() =>
@@ -34,8 +34,6 @@ export default class ImageGallery extends Component {
         
     } else if (prevState.page !== page) {
       services.fetch()
-        .then(res =>
-          res.json())
         .then(({ hits }) =>
           this.setState(prevState =>
             ({ pictures: [...prevState.pictures, ...hits] })))
@@ -44,7 +42,7 @@ export default class ImageGallery extends Component {
       
     } else if (prevState.id !== id) {
       this.setState({photo: null})
-      services.fetchPic().then(res => res.json())
+      services.fetchPic()
         .then(({hits}) =>
          this.setState({photo: hits}))
     }
